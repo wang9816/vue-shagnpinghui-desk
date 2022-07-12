@@ -22,5 +22,5 @@ pnpm-debug.log*
 *.sln
 *.sw?
 #reference
-静态组件
-静态页面
+static_c
+static_v
