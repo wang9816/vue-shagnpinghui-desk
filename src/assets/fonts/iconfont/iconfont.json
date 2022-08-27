@@ -1,0 +1,23 @@
+{
+  "id": "3534230",
+  "name": "VUEPC-SHANGPINGHUI",
+  "font_family": "iconfont",
+  "css_prefix_text": "icon-",
+  "description": "",
+  "glyphs": [
+    {
+      "icon_id": "372100",
+      "name": "cc-arrow-down",
+      "font_class": "arrow-down",
+      "unicode": "e606",
+      "unicode_decimal": 58886
+    },
+    {
+      "icon_id": "372109",
+      "name": "cc-arrow-up",
+      "font_class": "arrow-up",
+      "unicode": "e60f",
+      "unicode_decimal": 58895
+    }
+  ]
+}

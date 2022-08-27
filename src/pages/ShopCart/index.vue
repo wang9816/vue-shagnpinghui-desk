@@ -15,11 +15,13 @@
         :key="item.id"
         >
           <li class="cart-list-con1">
-            <input type="checkbox" name="chk_list" :checked="item.isChecked">
+            <input type="checkbox" name="chk_list" :checked="item.isChecked"
+            @click="updateSingleChecked(item)"
+            >
           </li>
           <li class="cart-list-con2">
             <img :src="item.imgUrl">
-            <div class="item-msg">{{item.skuName}}</div>
+            <a href="javascipt:;" class="item-msg" @click="$router.push(`/detail/${item.skuId}`)">{{item.skuName}}</a>
           </li>
 
           <li class="cart-list-con4">
@@ -44,7 +46,7 @@
             <span class="sum">{{(item.cartPrice)*(item.skuNum)}}</span>
           </li>
           <li class="cart-list-con7">
-            <a href="#none" class="sindelet">删除</a>
+            <a href="javascript:;" class="sindelet" @click="cartDeleteOneItem(item)">删除</a>
             <br>
             <a href="#none">移到收藏</a>
           </li>
@@ -61,7 +63,7 @@
         <span>全选</span>
       </div>
       <div class="option">
-        <a href="#none">删除选中的商品</a>
+        <a href="javascript:" @click="cartDeleteSelectedItems">删除选中的商品</a>
         <a href="#none">移到我的关注</a>
         <a href="#none">清除下柜商品</a>
       </div>
@@ -73,7 +75,7 @@
           <i class="summoney">{{allMoney}}</i>
         </div>
         <div class="sumbtn">
-          <a class="sum-btn" href="###" target="_blank">结算</a>
+          <router-link class="sum-btn" to="/trade">结算</router-link>
         </div>
       </div>
     </div>
@@ -81,7 +83,7 @@
 </template>
 
 <script>
-  import {mapState} from "vuex";
+
 
   export default {
     name: 'ShopCart',
@@ -90,12 +92,43 @@
 
       }
     },
+
     mounted() {
-      this.getCartList()
+      this.$store.dispatch('getCartList')
     },
     methods:{
+      async cartDeleteSelectedItems(){
+        if(window.confirm('确定删除吗?')){
+          try {
+            await this.$store.dispatch('cartDeleteSelectedItemScenario2')
+            this.getCartList()
+          }catch(error){
+             alert(error.message)
+          }
+        }
+      },
+      async cartDeleteOneItem(item){
+       try {
+         await this.$store.dispatch('deleteCartItem',item.skuId)
+         alert('del sucess');
+         this.getCartList()
+       }catch (error){
+         alert(error.message)
+       }
+      },
+      async updateSingleChecked(item){
+        try {
 
-      
+
+          await this.$store.dispatch('updateCartCartChecked',{skuId:item.skuId,isChecked:item.isChecked?0:1})
+
+
+          this.getCartList()
+        }catch (error){
+          alert(error.message);
+        }
+      },
+
       async changeCartNum(item,value,flag){
        /*let {skuId,skuNum} = item*/
         if(!flag){
@@ -121,9 +154,12 @@
       }
     },
     computed:{
-      ...mapState({
+     /* ...mapState({
         shopCartList:state => state.shopcart.shopCartList
-      }),
+      }),*/
+      shopCartList () {
+        return this.$store.state.shopcart.shopCartList || {}
+      },
       checkedNum(){
         return  this.shopCartList[0].cartInfoList.reduce((prev,item)=>{
           if(item.isChecked){
@@ -149,7 +185,9 @@
             return item.isChecked
           })
         },
-        set(){}
+        async set(val){
+           this.$store.dispatch('updateCartAllChecked',val)
+        }
       }
     }
   }

@@ -5,15 +5,20 @@
       <div class="container">
         <div class="loginList">
           <p>尚品汇欢迎您！</p>
-          <p>
+          <p v-if="userInfo.name">
+            <span>{{userInfo.name}}</span>
+            <a href="javascript:" style="margin-left: 15px" @click="logout">退出</a>
+          </p>
+          <p v-else>
             <span>请</span>
-            <router-link to="/login">登陆</router-link>
+            <router-link to="/login">登录</router-link>
             <router-link class="register" to="/register">免费注册</router-link>
           </p>
         </div>
         <div class="typeList">
-          <a href="javascript:">我的订单</a>
-          <a href="javascript:">我的购物车</a>
+          <a href="javascript:" @click="$router.push('/center/myorder')">我的订单</a>
+
+          <router-link to="/shopcart">我的购物车</router-link>
           <a href="javascript:">我的尚品汇</a>
           <a href="javascript:">尚品汇会员</a>
           <a href="javascript:">企业采购</a>
@@ -27,16 +32,17 @@
     <div class="bottom">
       <h1 class="logoArea">
         <router-link class="logo" to="/">
-          <img src="./images/logo.png" alt="logo" />
+          <img src="./images/logo.png" alt="logo"/>
         </router-link>
       </h1>
       <div class="searchArea">
         <form class="searchForm">
           <input type="text" id="autocomplete" class="input-error input-xxlarge"
                  v-model.trim="keyword"/>
-          <button class="sui-btn btn-xlarge btn-danger"  @click.prevent="search">
-            搜索</button>
-<!--          type="button"-->
+          <button class="sui-btn btn-xlarge btn-danger" @click.prevent="toSearch">
+            搜索
+          </button>
+
         </form>
       </div>
     </div>
@@ -46,31 +52,56 @@
 <script>
 
 export default {
-  name:'Header',
-  components:{},
-  mounted() {},
-  data(){
-    return {
-      keyword:''
-    }
-  },
-  methods:{
-    search(){
-     /* this.$router.push(`/search/${this.keyword}?keyword=${this.keyword}`)*/
-      this.$router.push({
-        name:"search",
-        params:{
-          keyword:this.keyword
-        },
-        query:{
-          keyword:this.keyword.toUpperCase()
-        }
-      },() => {
+  name: 'Header',
 
-      })
+  mounted() {
+    this.$bus.$on('removeKeyword', () => {
+      this.keyword = ''
+    })
+  },
+  beforeDestroy() {
+    this.$bus.$off('removeKeyword')
+  },
+  data() {
+    return {
+      keyword: ''
     }
   },
-  watch:{}
+
+  methods: {
+    //signOut
+    async logout(){
+      await this.$store.dispatch('userLogout')
+      await this.$router.push('/')
+    },
+    //click button search to specified page
+    toSearch() {
+      // console.log(this.keyword)
+      /* this.$router.push(`/Search/${this.keyword}?keyword=${this.keyword}`)*/
+      const location = {
+        name: 'search',
+        query: this.$route.query
+      }
+      if (this.keyword !== '') {
+        location.params = {keyword: this.keyword}
+      }
+
+      if (this.keyword === 'search') {
+        this.$router.replace(location)
+      } else {
+        this.$router.push(location)
+      }
+    }
+  },
+  watch: {},
+  computed: {
+    userInfo() {
+      return this.$store.state.user.userInfo || {}
+    },
+    token() {
+      return this.$store.state.user.token || ''
+    }
+  }
 }
 
 </script>
@@ -78,7 +109,7 @@ export default {
 
 <style lang="less" scoped>
 .header {
-  &>.top {
+  & > .top {
     background-color: #eaeaea;
     height: 30px;
     line-height: 30px;
@@ -109,7 +140,7 @@ export default {
         a {
           padding: 0 10px;
 
-          &+a {
+          & + a {
             border-left: 1px solid #b3aeae;
           }
         }
@@ -119,7 +150,7 @@ export default {
     }
   }
 
-  &>.bottom {
+  & > .bottom {
     width: 1200px;
     margin: 0 auto;
     overflow: hidden;
@@ -146,7 +177,7 @@ export default {
           box-sizing: border-box;
           width: 490px;
           height: 32px;
-          padding: 0px 4px;
+          padding: 0 4px;
           border: 2px solid #ea4a36;
           float: left;
 

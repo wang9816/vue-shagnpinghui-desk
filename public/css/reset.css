@@ -1,5 +1,10 @@
-@import "./iconfont.css";
-
+@import "../fonts/iconfont/iconfont.css";
+@font-face {
+    font-family: 'iconfont';
+    src: url('../fonts/iconfont/iconfont.woff2?t=1658281130270') format('woff2'),
+    url('../fonts/iconfont/iconfont.woff?t=1658281130270') format('woff'),
+    url('../fonts/iconfont/iconfont.ttf?t=1658281130270') format('truetype');
+}
 /* 清除内外边距 */
 body, h1, h2, h3, h4, h5, h6, hr, p, blockquote,
 dl, dt, dd, ul, ol, li,
@@ -8,6 +13,13 @@ fieldset, lengend, button, input, textarea,
 th, td {
     margin: 0;
     padding: 0;
+}
+.iconfont {
+    font-family: "iconfont" !important;
+    font-size: 16px;
+    font-style: normal;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
 /* 设置默认字体 */
